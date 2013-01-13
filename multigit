@@ -28,8 +28,8 @@ if (!-r $configLocation) {
 }
 
 &parseParams($configLocation);
-my $configStatus = &checkConfig();
 
+my $configStatus = &checkConfig();
 unless ($configStatus eq $OK){
   &printError("Please correct your configuration in \"$configLocation\":\n>> " . $configStatus);
 }
@@ -47,9 +47,7 @@ if (@ARGV > 0 && $ARGV[0] =~/^-/) {
   $flags = $params{$DEFAULT_PARAMETER};
 }
 
-if (@ARGV == 0 ) {
-  &printUsage;
-}
+if (@ARGV == 0 ) { &printUsage; exit(0); }
 
 my $gitArgs = join(' ', &prepareArgs(@ARGV));
 
@@ -331,5 +329,4 @@ sub printUsage {
   print "\n";
   print " - If you do not include a git command, flags for git are captured by multigit\n";
   print "\n";
-  exit 0;
 }
