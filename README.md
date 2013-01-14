@@ -39,16 +39,14 @@ Therefore you set the `defaultParams` to `BP1v`.
 
 Typical workflow:
 
-`multigit checkout master`
-`multigit pull`
-`multigit checkout -b new_branch`
-
-work in those repositories:
-
-`multigit diff`
-`multigit commit -am "Some very helpful commit message"`
-
-`multigit push`
+ - `multigit checkout master`
+ - `multigit pull`
+ - `multigit checkout -b new_branch`
+ - work in those repositories:
+ - `multigit diff`
+ - `multigit commit -am "A very helpful commit message"`
+ - ...
+ - `multigit push`
 
 ## Remarks:
 
