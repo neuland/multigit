@@ -23,7 +23,7 @@ you would have these git repositories configured for `multigit`:
  - /usr/work/hal9000/life\_support
  - /usr/work/hal9000/camera
 
-and you would have grouped the repositories into like this:
+and you would have grouped the repositories like this:
 
  - Backend systems: base, persistence, reasoning and logic
  - Frontend systems: speech\_synthesis and light\_control
