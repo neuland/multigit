@@ -25,7 +25,7 @@ you would have these git repositories configured for `multigit`:
 
 and you would have grouped the repositories into like this:
 
- - Backend systems: base, persistenec, reasoning and logic
+ - Backend systems: base, persistence, reasoning and logic
  - Frontend systems: speech\_synthesis and light\_control
  - Interfaces: air\_lock, life\_support and camera
 
@@ -53,11 +53,10 @@ work in those repositories:
 ## Remarks:
 
  - `multigit` delegate anything to `git`. It just moves into the correct repositories first,
-   therefore it is irrelevant from where you call `multigit`.
+   therefore it is irrelevant from where you call it.
 
  - For usage on your coding machine you should set your `defaultParams` to include every repository.
    `multigit`s output includes the parameter values for each repository so that you can easily adapt your
    command line string.
 
  - For usage on a specialized system you can set yout `defaultParams` to ignore everything not relevant there.
-
