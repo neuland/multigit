@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+  echo "Usage: `basename $0` something_i_look_for_in_a_branch_name"
+  exit 65
+fi
+multigit branch -r | grep "\(git branch\|$1\)" | grep -B1 $1 | grep -v "^--" | sed -e "s/:.*//"
