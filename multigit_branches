@@ -5,4 +5,9 @@ then
   echo "Usage: `basename $0` something_i_look_for_in_a_branch_name"
   exit 65
 fi
-multigit branch -r | grep -i "\(git branch\|$1\)" | grep -iB1 "^ .*$1" | grep -v "^--" | sed -e "s/:.*//"
+multigit branch -r | \
+  grep -i "\(git branch\|$1\)" | \
+  grep -v ' -> ' | \
+  perl -e 'while(<>){if (!m/^\(/ || $l !~ m/^\(/){print $l}$l = $_}if ($l !~ m/^\(/){print $l}' | \
+  sed -e "s/:.*//" | \
+  sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
