@@ -334,11 +334,14 @@ sub showParameterList {
 
 sub printUsage {
   print "\n";
-  print "USAGE: multigit [-".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...]";
+  print "USAGE: multigit [-".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...]\n";
+  print "   or: multigit [+".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...]";
   print "\n";
   print &allProjectHelpTexts();
   print "\n";
   print "For when you do not select specific projects, your default is set to projects ".&showParameterList($params{$DEFAULT_PARAMETER})."\n";
+  print "\n";
+  print "If you specify projects with '+', your default projects - except those mentioned - will be used\n";
   print "\n";
   print "CAVEATS:\n";
   print " - Git aliases can be used, as the parameters are delegated to git as they are.\n";
