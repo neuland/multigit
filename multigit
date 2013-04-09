@@ -24,24 +24,35 @@ my $configLocation = $ENV{"HOME"} . $CONFIG_FILENAME;
 my %params = ($COLOR_ALERT => 'bold red');
 
 if (!-r $configLocation) {
-  &printError("Please set up a readable \"$configLocation\" file.");
+  &printErrorAndExit("Please set up a readable \"$configLocation\" file.");
 }
 
 &parseParams($configLocation);
 
 my $configStatus = &checkConfig();
 unless ($configStatus eq $OK){
-  &printError("Please correct your configuration in \"$configLocation\":\n>> " . $configStatus);
+  &printErrorAndExit("Please correct your configuration in \"$configLocation\":\n>> " . $configStatus);
 }
 
 my $flags;
 
-if (@ARGV > 0 && $ARGV[0] =~/^-/) {
+if (@ARGV > 0 && $ARGV[0] =~/^[+-]/) {
   ($flags, @ARGV) = @ARGV;
-  $flags = substr($flags, 1);
+  if ($flags =~/^\+/) {
+    $flags = substr($flags, 1);
+    my $sortedDefaults = join('', sort {$a cmp $b} split(//, $params{$DEFAULT_PARAMETER}));
+    my $preparedFlags = join('.*', sort {$a cmp $b} split(//, $flags));
+    if ($sortedDefaults !~ /$preparedFlags/) {
+        &printParameterErrorAndExit();
+    }
+    my $tmp = $params{$DEFAULT_PARAMETER};
+    $tmp =~ s/[$flags]//g;
+    $flags = $tmp;
+  } else {
+    $flags = substr($flags, 1);
+  }
   unless (&allCharsInString($flags, $params{$ALL_PROJECT_PARAMS})) {
-    &printError("Only project parameters ".&showParameterList($params{$ALL_PROJECT_PARAMS})." are configured...\n"
-               .">> See \"multigit\" without parameters for more info.");
+        &printParameterErrorAndExit();
   }
 } else {
   $flags = $params{$DEFAULT_PARAMETER};
@@ -300,10 +311,15 @@ sub printWarning {
   print color 'reset';
 }
 
-sub printError {
+sub printErrorAndExit {
   my $text = shift;
   &printWarning($text . "\n");
   exit(0);
+}
+
+sub printParameterErrorAndExit {
+  &printErrorAndExit("Only project parameters ".&showParameterList($params{$ALL_PROJECT_PARAMS})." are configured...\n"
+                    .">> See \"multigit\" without parameters for more info.");
 }
 
 sub showParameterList {
