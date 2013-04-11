@@ -38,18 +38,16 @@ my $flags;
 
 if (@ARGV > 0 && $ARGV[0] =~/^[+-]/) {
   ($flags, @ARGV) = @ARGV;
-  if ($flags =~/^\+/) {
-    $flags = substr($flags, 1);
+  my $excludeProjects = $flags =~ /^\+/;
+  $flags = substr($flags, 1);
+  if ($excludeProjects) {
     my $sortedDefaults = join('', sort {$a cmp $b} split(//, $params{$DEFAULT_PARAMETER}));
     my $preparedFlags = join('.*', sort {$a cmp $b} split(//, $flags));
     if ($sortedDefaults !~ /$preparedFlags/) {
         &printParameterErrorAndExit();
     }
-    my $tmp = $params{$DEFAULT_PARAMETER};
-    $tmp =~ s/[$flags]//g;
-    $flags = $tmp;
-  } else {
-    $flags = substr($flags, 1);
+    $sortedDefaults =~ s/[$flags]//g;
+    $flags = $sortedDefaults;
   }
   unless (&allCharsInString($flags, $params{$ALL_PROJECT_PARAMS})) {
         &printParameterErrorAndExit();
