@@ -53,8 +53,14 @@ Typical workflow:
  - `multigit` delegate anything to `git`. It just moves into the correct repositories first,
    therefore it is irrelevant from where you call it.
 
+ - You can sequence multiple git commands using a command delimiter (defaults to %%), e.g. `multigit co master %% pull %% status`
+
  - For usage on your coding machine you should set your `defaultParams` to include every repository.
    `multigit`s output includes the parameter values for each repository so that you can easily adapt your
    command line string.
 
  - For usage on a specialized system you can set yout `defaultParams` to ignore everything not relevant there.
+
+ - It may be useful to set up some aliases for different repository presets, like:
+   - alias mgFoo ='multigit -BP1v'
+   - alias mgBar ='multigit -Bv'
