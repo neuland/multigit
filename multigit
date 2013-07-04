@@ -6,22 +6,24 @@ use Term::ANSIColor;
 
 my $debug = 0;
 
-my $CONFIG_FILENAME     = "/.multigit.conf";
-my $ALL_PROJECT_PARAMS  = "allProjectParams";
-my $BASE_DIR            = "baseDir";
-my $COLOR_ALERT         = "colorAlert";
-my $COLOR_PROJECT       = "colorProject";
-my $COLOR_PROJECT_GROUP = "colorProjectGroup";
-my $COLOR_SEPERATOR     = "colorSeperator";
-my $COLOR_STDOUT        = "colorStdOut";
-my $DEFAULT_PARAMETER   = "defaultParams";
-my $GENERAL_PROBLEM     = "THERE HAS BEEN A PROBLEM!!!";
-my $OK                  = "ok";
-my $PROJECTS            = "projects";
-my $PROJECT_MARKER      = "Projects {";
+my $CONFIG_FILENAME        = "/.multigit.conf";
+my $ALL_PROJECT_PARAMS     = "allProjectParams";
+my $BASE_DIR               = "baseDir";
+my $COLOR_ALERT            = "colorAlert";
+my $COLOR_PROJECT          = "colorProject";
+my $COLOR_PROJECT_GROUP    = "colorProjectGroup";
+my $COLOR_SEPERATOR        = "colorSeperator";
+my $COLOR_STDOUT           = "colorStdOut";
+my $DEFAULT_PARAMETER      = "defaultParams";
+my $GENERAL_PROBLEM        = "THERE HAS BEEN A PROBLEM!!!";
+my $OK                     = "ok";
+my $PROJECTS               = "projects";
+my $PROJECT_MARKER         = "Projects {";
+my $MULTICOMMAND_DELIMITER = "%%";
 
 my $configLocation = $ENV{"HOME"} . $CONFIG_FILENAME;
 my %params = ($COLOR_ALERT => 'bold red');
+my $error = 0;
 
 if (!-r $configLocation) {
   &printErrorAndExit("Please set up a readable \"$configLocation\" file.");
@@ -60,7 +62,18 @@ if (@ARGV == 0 ) { &printUsage; exit(0); }
 
 my $gitArgs = join(' ', &prepareArgs(@ARGV));
 
-&doGitActions($flags, $gitArgs);
+if ($gitArgs =~ m/$MULTICOMMAND_DELIMITER/) {
+  $debug && print "Multiple commands found!\n";
+  my @commandList = split(/\s+$MULTICOMMAND_DELIMITER\s+/, $gitArgs);
+  for (my $i = 0; $i < @commandList; $i++) {
+    &doGitActions($flags, $commandList[$i]);
+    if ($error) {
+      &printErrorAndExit("Stopping, because of an error");
+    }
+  }
+} else {
+  &doGitActions($flags, $gitArgs);
+}
 
 ###############################
 ## Only Subroutines below... ##
@@ -106,6 +119,7 @@ sub doOneGitAction {
   print `git $args`;
   if ($? != 0) {
     &printWarning($GENERAL_PROBLEM);
+    $error = 1;
   }
   print color 'reset';
 }
@@ -332,14 +346,16 @@ sub showParameterList {
 
 sub printUsage {
   print "\n";
-  print "USAGE: multigit [-".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...]\n";
-  print "   or: multigit [+".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...]";
+  print "USAGE: multigit [<-/+>".$params{$ALL_PROJECT_PARAMS}."] <git-command> [git-command parameters...] [$MULTICOMMAND_DELIMITER <git-command> [git-command parameters...]]+\n";
   print "\n";
   print &allProjectHelpTexts();
   print "\n";
   print "For when you do not select specific projects, your default is set to projects ".&showParameterList($params{$DEFAULT_PARAMETER})."\n";
   print "\n";
-  print "If you specify projects with '+', your default projects - except those mentioned - will be used\n";
+  print "If you specify projects with '+', your default projects excluding those mentioned will be used\n";
+  print "\n";
+  print "You can sequence multiple git-commands using '$MULTICOMMAND_DELIMITER' to execute them one after the other\n";
+  print "  e.g. 'multigit checkout master $MULTICOMMAND_DELIMITER pull $MULTICOMMAND_DELIMITER status\n";
   print "\n";
   print "CAVEATS:\n";
   print " - Git aliases can be used, as the parameters are delegated to git as they are.\n";
