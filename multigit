@@ -20,6 +20,7 @@ my $OK                     = "ok";
 my $PROJECTS               = "projects";
 my $PROJECT_MARKER         = "Projects {";
 my $MULTICOMMAND_DELIMITER = "%%";
+my $GIT_COMMAND            = "gitCommand";
 
 my $configLocation = $ENV{"HOME"} . $CONFIG_FILENAME;
 my %params = ($COLOR_ALERT => 'bold red');
@@ -116,7 +117,7 @@ sub doOneGitAction {
   if (! -d "$targetDir/.git") { &printWarning("Directory \"$targetDir\" does not contain a git project."); return; }
   print color $params{$COLOR_STDOUT};
   chdir($targetDir);
-  print `git $args`;
+  print `$params{$GIT_COMMAND} $args`;
   if ($? != 0) {
     &printWarning($GENERAL_PROBLEM);
     $error = 1;
@@ -185,6 +186,7 @@ sub parseParams {
 sub checkConfig {
   unless (defined ($params{$BASE_DIR})) { return "\"$BASE_DIR\" is missing"; }
   unless (defined ($params{$DEFAULT_PARAMETER})) { return "\"$DEFAULT_PARAMETER\" is missing"; }
+  unless (defined ($params{$GIT_COMMAND})) { return "\"$GIT_COMMAND\" is missing"; }
   unless (defined ($params{$COLOR_PROJECT_GROUP})) { return "\"$COLOR_PROJECT_GROUP\" is missing"; }
   unless (defined ($params{$COLOR_PROJECT})) { return "\"$COLOR_PROJECT\" is missing"; }
   unless (defined ($params{$COLOR_SEPERATOR})) { return "\"$COLOR_SEPERATOR\" is missing"; }
