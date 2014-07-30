@@ -9,6 +9,7 @@ my $debug = 0;
 my $CONFIG_FILENAME        = "/.multigit.conf";
 my $ALL_PROJECT_PARAMS     = "allProjectParams";
 my $BASE_DIR               = "baseDir";
+my $COLOR_OUTPUT_ENABLED   = "colorOutputEnabled";
 my $COLOR_ALERT            = "colorAlert";
 my $COLOR_PROJECT          = "colorProject";
 my $COLOR_PROJECT_GROUP    = "colorProjectGroup";
@@ -32,6 +33,7 @@ if (!-r $configLocation) {
 
 &parseParams($configLocation);
 
+my $colorOutput = $params{$COLOR_OUTPUT_ENABLED};
 my $configStatus = &checkConfig();
 unless ($configStatus eq $OK){
   &printErrorAndExit("Please correct your configuration in \"$configLocation\":\n>> " . $configStatus);
@@ -82,9 +84,7 @@ if ($gitArgs =~ m/$MULTICOMMAND_DELIMITER/) {
 
 sub doGitActions {
   my ($flags, $args) = @_;
-  my @extGroups = @{$params{$PROJECTS}};
-  my $groupStop = @extGroups - 1;
-  my $projectCount = 0;
+  my @extGroups = @{$params{$PROJECTS}}; my $groupStop = @extGroups - 1; my $projectCount = 0;
   for (my $i = 0; $i < $groupStop; $i += 2) {
     my @ex = @{$extGroups[$i + 1]};
     my $groupParameters = substr($params{$ALL_PROJECT_PARAMS}, $projectCount, @ex);
@@ -107,15 +107,15 @@ sub doOneGitAction {
   my $restOfLine = " git $args";
   my $underline = $text . $restOfLine;
   $underline =~ s/./=/g;
-  print color $params{$COLOR_PROJECT};
+  $colorOutput && print color $params{$COLOR_PROJECT};
   print "\n$text";
-  print color $params{$COLOR_SEPERATOR};
+  $colorOutput && print color $params{$COLOR_SEPERATOR};
   print "$restOfLine\n";
   print "$underline\n";
   my $targetDir = $params{$BASE_DIR}. "/" . $project;
   if (! -d "$targetDir")      { &printWarning("Directory \"$targetDir\" does not exist."); return; }
   if (! -d "$targetDir/.git") { &printWarning("Directory \"$targetDir\" does not contain a git project."); return; }
-  print color $params{$COLOR_STDOUT};
+  $colorOutput && print color $params{$COLOR_STDOUT};
   chdir($targetDir);
   open my $handle, "$params{$GIT_COMMAND} $args |" or die "Oops... something went wrong...";
   while (<$handle>) {
@@ -126,7 +126,7 @@ sub doOneGitAction {
     &printWarning($GENERAL_PROBLEM);
     $error = 1;
   }
-  print color 'reset';
+  $colorOutput && print color 'reset';
 }
 
 sub prepareArgs {
@@ -317,16 +317,16 @@ sub printHeader {
   $text .= ":";
   my $underline = $text;
   $underline =~ s/./=/g;
-  print color $params{$COLOR_PROJECT_GROUP};
+  $colorOutput && print color $params{$COLOR_PROJECT_GROUP};
   print "\n$text\n$underline";
-  print color 'reset';
+  $colorOutput && print color 'reset';
 }
 
 sub printWarning {
   my $text = shift;
-  print color $params{$COLOR_ALERT};
+  $colorOutput && print color $params{$COLOR_ALERT};
   print "\n$text\n\n";
-  print color 'reset';
+  $colorOutput && print color 'reset';
 }
 
 sub printErrorAndExit {
