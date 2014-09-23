@@ -10,5 +10,5 @@ multigit branch -r | \
   grep -v ' -> ' | \
   perl -e 'while(<>){if (!m/^\(/ || $l !~ m/^\(/){print $l}$l = $_}if ($l !~ m/^\(/){print $l}' | \
   sed -e "s/:.*//" | \
-  tr -cd [:alnum:][:space:]/._\(\) | \
+  tr -cd [:alnum:][:space:]/._\(\)- | \
   sed -e "s/^[^( ]\+//"
