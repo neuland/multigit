@@ -19,7 +19,7 @@ my $DEFAULT_PARAMETER      = "defaultParams";
 my $GENERAL_PROBLEM        = "THERE HAS BEEN A PROBLEM!!!";
 my $OK                     = "ok";
 my $PROJECTS               = "projects";
-my $PROJECT_MARKER         = "Projects {";
+my $PROJECT_MARKER         = "Projects [{]";
 my $MULTICOMMAND_DELIMITER = "%%";
 my $GIT_COMMAND            = "gitCommand";
 
